@@ -3,37 +3,60 @@ using System.Collections.Generic;
 
 using Atagoal.Core;
 
+using VectorBurnerCalculation;
+
 public class VectorBurner
-{
-    public class Body
-    {
-        public Point point;
-        public List<Point> boundaryLines;
-    }
-
-    private Body _target = null;
-    private List<Body> _barricades = null;
-
-
-
-    // ===============================================================
-
-    public Point GetVelocity(
+{   
+    public Point GetDestination(
         Body target,
         Point velocity,
         List<Body> barricades)
     {
-        return Point.Create(0, 0);
+        var calculatedVelocity = GetVelocity(target, velocity, barricades);
+
+        var velocityLength = (float)System.Math.Sqrt(
+            velocity.x * velocity.x +
+            velocity.y * velocity.y);
+
+        var calculatedVelocityLength = (float)System.Math.Sqrt(
+            calculatedVelocity.x * calculatedVelocity.x +
+            calculatedVelocity.y * calculatedVelocity.y);
+
+        if (calculatedVelocityLength == velocityLength)
+            return Point.Create(
+                target.point.x + calculatedVelocity.x,
+                target.point.y + calculatedVelocity.y);
+
+        if (calculatedVelocityLength <= 0)
+            return target.point;
+
+        var newTarget = new Body
+        {
+            point = Point.Create(
+                target.point.x + calculatedVelocity.x,
+                target.point.y + calculatedVelocity.y),
+            boundaryLines = target.boundaryLines
+        };
+
+        var newVelocity = Point.Create(
+                velocity.x * calculatedVelocityLength / velocityLength,
+                velocity.y * calculatedVelocityLength / velocityLength);
+
+        return GetDestination(
+            newTarget,
+            newVelocity,
+            barricades);
     }
 
-    public Point GetVelocity(
+
+    public Point GetDestination(
         Point targetPoint,
         List<Point> targetBoundaryLines,
         Point velocity,
         List<Point> barricadePoints,
         List<List<Point>> barricadeBoundaryLines)
     {
-        return GetVelocity(
+        return GetDestination(
             new Body
             {
                 point = targetPoint,
@@ -45,7 +68,10 @@ public class VectorBurner
 
 
 
-    // ===============================================================
+    // ------------------------------------------------------
+
+    private Body _target = null;
+    private List<Body> _barricades = null;
 
     public VectorBurner SetTarget(Body target)
     {
@@ -53,6 +79,7 @@ public class VectorBurner
 
         return this;
     }
+
     public VectorBurner SetTarget(
         Point targetPoint,
         List<Point> targetBoundaryLines)
@@ -88,11 +115,49 @@ public class VectorBurner
 
         return this;
     }
-    public Point GetVelocity(Point velocity)
+    public Point GetDestination(Point velocity)
     {
-        var calculatedVelocity = GetVelocity(_target, velocity, _barricades);
+        var destination = GetDestination(_target, velocity, _barricades);
         _target = null;
         _barricades = null;
+        return destination;
+    }
+
+
+    // ===============================================================
+
+    private Point GetVelocity(
+        Body target,
+        Point velocity,
+        List<Body> barricades)
+    {
+        float minDistance = float.MaxValue;
+
+        foreach (var barricade in barricades)
+        {
+            var temporaryVelocity = target.GetVelocity(velocity, barricade);
+
+            var temporaryVelocityLength = (float)System.Math.Sqrt(
+                temporaryVelocity.x * temporaryVelocity.x +
+                temporaryVelocity.y * temporaryVelocity.y);
+
+            if (temporaryVelocityLength < minDistance)
+            {
+                minDistance = temporaryVelocityLength;
+            }
+        }
+
+        var velocityLength = (float)System.Math.Sqrt(
+                velocity.x * velocity.x +
+                velocity.y * velocity.y);
+        var unitVelocity = Point.Create(
+            velocity.x / velocityLength,
+            velocity.y / velocityLength);
+
+        var calculatedVelocity = Point.Create(
+            unitVelocity.x * minDistance,
+            unitVelocity.y * minDistance);
+
         return calculatedVelocity;
     }
 
