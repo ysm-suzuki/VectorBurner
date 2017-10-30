@@ -6,11 +6,20 @@ using Atagoal.Core;
 using VectorBurnerCalculation;
 
 public class VectorBurner
-{   
+{
     public Point GetDestination(
         Body target,
         Point velocity,
         List<Body> barricades)
+    {
+        return GetDestination(target, velocity, barricades, true);
+    }
+
+    public Point GetDestination(
+        Body target,
+        Point velocity,
+        List<Body> barricades,
+        bool slip)
     {
         if (velocity.x == 0
             && velocity.y == 0)
@@ -49,8 +58,16 @@ public class VectorBurner
             boundaryLines = target.boundaryLines
         };
 
-        var newVelocity = Point.Create(0, 0); // kari
+        var newVelocity = Point.Create(0, 0);
         
+        if (slip)
+        {
+            var newVector = VectorBurnerCalculation.Math.GetLineVector(
+                            Vector.Create(calculatedVelocity.x, calculatedVelocity.y), collision.lineSegment)
+                            * (velocityLength - calculatedVelocityLength);
+            newVelocity = Point.Create(newVector.x, newVector.y);
+        }
+
         return GetDestination(
             newTarget,
             newVelocity,

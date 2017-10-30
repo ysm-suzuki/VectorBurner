@@ -77,6 +77,9 @@ namespace VectorBurnerCalculation
                 cos += System.Math.PI * 2;
             while (cos > System.Math.PI * 2)
                 cos -= System.Math.PI * 2;
+            
+            if (cos == 0 || cos == System.Math.PI)
+                return Vector.Create(0, 0);
 
             if (cos < System.Math.PI / 2 || cos > System.Math.PI * 3 / 2)
                 return lineVector.GetUnit();
