@@ -16,75 +16,81 @@ namespace UnitTest
 
         public void Run()
         {
-            var vectorBurner = new VectorBurner();
 
-            var target = new Body
+            foreach(var testCase in _testCases)
             {
-                point = Point.Create(3, 3),
-                boundaryLines = new List<Point>
-                    {
-                        Point.Create(-1, 1),
-                        Point.Create(1, 1),
-                        Point.Create(1, -1),
-                        Point.Create(-1, -1)
-                    }
-            };
+                var vectorBurner = new VectorBurner();
 
-            var velocity = Point.Create(0, 20);
+                var target = testCase.target;
+                var velocity = testCase.velocity;
+                var barricades = testCase.barricades;
+                var expected = testCase.expected;
+                
+                var result = vectorBurner
+                    .SetTarget(target)
+                    .SetBarricades(barricades)
+                    .GetDestination(velocity);
 
-            var barricades = new List<Body>
-            {
-                new Body
+                if (expected.x == result.x
+                    && expected.y == result.y)
+                    Console.WriteLine("the test passed at " + testCase.title);
+                else
                 {
-                    point = Point.Create(10, 10),
-                    boundaryLines = new List<Point>
-                    {
-                        Point.Create(-20, 1),
-                        Point.Create(20, 1),
-                        Point.Create(20, -1),
-                        Point.Create(-20, -1)
-                    }
+                    Console.WriteLine("the test failed at " + testCase.title);
+                    Console.WriteLine("result.x : " + result.x);
+                    Console.WriteLine("result.y : " + result.y);
+                    Console.WriteLine("but");
+                    Console.WriteLine("expected.x : " + expected.x);
+                    Console.WriteLine("expected.y : " + expected.y);
                 }
-            };
-
-            var expected = Point.Create(3, 8);
-
-            var result1 = vectorBurner.GetDestination(
-                target,
-                velocity,
-                barricades);
-
-            var result2 = vectorBurner
-                .SetTarget(target)
-                .SetBarricades(barricades)
-                .GetDestination(velocity);
-
-            if (expected.x == result1.x
-                && expected.y == result1.y)
-                Console.WriteLine("the test passed at result1");
-            else
-            {
-                Console.WriteLine("the test failed at result1");
-                Console.WriteLine("result1.x : " + result1.x);
-                Console.WriteLine("result1.y : " + result1.y);
-                Console.WriteLine("but");
-                Console.WriteLine("expected.x : " + expected.x);
-                Console.WriteLine("expected.y : " + expected.y);
             }
-
-            if (expected.x == result2.x
-                && expected.y == result2.y)
-                Console.WriteLine("the test passed at result2");
-            else
-            {
-                Console.WriteLine("the test failed at result2");
-                Console.WriteLine("result2.x : " + result2.x);
-                Console.WriteLine("result2.y : " + result2.y);
-                Console.WriteLine("but");
-                Console.WriteLine("expected.x : " + expected.x);
-                Console.WriteLine("expected.y : " + expected.y);
-            }
-
         }
+
+
+        class TestCase
+        {
+            public string title;
+
+            public Body target;
+            public Point velocity;
+            public List<Body> barricades;
+
+            public Point expected;
+        }
+
+        private List<TestCase> _testCases = new List<TestCase>
+        {
+            new TestCase
+            {
+                title = "test1",
+                target = new Body
+                {
+                    point = Point.Create(3, 3),
+                    boundaryLines = new List<Point>
+                        {
+                            Point.Create(-1, 1),
+                            Point.Create(1, 1),
+                            Point.Create(1, -1),
+                            Point.Create(-1, -1)
+                        }
+                },
+                velocity = Point.Create(0, 20),
+                barricades = new List<Body>
+                {
+                    new Body
+                    {
+                        point = Point.Create(10, 10),
+                        boundaryLines = new List<Point>
+                        {
+                            Point.Create(-20, 1),
+                            Point.Create(20, 1),
+                            Point.Create(20, -1),
+                            Point.Create(-20, -1)
+                        }
+                    }
+                },
+                expected = Point.Create(3, 8)
+            }
+        };
     }
 }
