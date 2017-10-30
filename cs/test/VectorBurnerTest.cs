@@ -47,7 +47,7 @@ namespace UnitTest
                 }
             };
 
-            var expected = Point.Create(3, 9);
+            var expected = Point.Create(3, 8);
 
             var result1 = vectorBurner.GetDestination(
                 target,
@@ -63,13 +63,28 @@ namespace UnitTest
                 && expected.y == result1.y)
                 Console.WriteLine("the test passed at result1");
             else
+            {
                 Console.WriteLine("the test failed at result1");
+                Console.WriteLine("result1.x : " + result1.x);
+                Console.WriteLine("result1.y : " + result1.y);
+                Console.WriteLine("but");
+                Console.WriteLine("expected.x : " + expected.x);
+                Console.WriteLine("expected.y : " + expected.y);
+            }
 
             if (expected.x == result2.x
                 && expected.y == result2.y)
                 Console.WriteLine("the test passed at result2");
             else
+            {
                 Console.WriteLine("the test failed at result2");
+                Console.WriteLine("result2.x : " + result2.x);
+                Console.WriteLine("result2.y : " + result2.y);
+                Console.WriteLine("but");
+                Console.WriteLine("expected.x : " + expected.x);
+                Console.WriteLine("expected.y : " + expected.y);
+            }
+
         }
     }
 }

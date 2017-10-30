@@ -12,8 +12,12 @@ public class VectorBurner
         Point velocity,
         List<Body> barricades)
     {
-        var calculatedVelocity = GetVelocity(target, velocity, barricades);
+        if (velocity.x == 0
+            && velocity.y == 0)
+            return target.point;
 
+        var calculatedVelocity = GetVelocity(target, velocity, barricades);
+        
         var velocityLength = (float)System.Math.Sqrt(
             velocity.x * velocity.x +
             velocity.y * velocity.y);
@@ -21,6 +25,7 @@ public class VectorBurner
         var calculatedVelocityLength = (float)System.Math.Sqrt(
             calculatedVelocity.x * calculatedVelocity.x +
             calculatedVelocity.y * calculatedVelocity.y);
+
 
         if (calculatedVelocityLength == velocityLength)
             return Point.Create(
@@ -38,10 +43,8 @@ public class VectorBurner
             boundaryLines = target.boundaryLines
         };
 
-        var newVelocity = Point.Create(
-                velocity.x * calculatedVelocityLength / velocityLength,
-                velocity.y * calculatedVelocityLength / velocityLength);
-
+        var newVelocity = Point.Create(0, 0); // kari
+        
         return GetDestination(
             newTarget,
             newVelocity,
@@ -133,8 +136,9 @@ public class VectorBurner
     {
         float minDistance = float.MaxValue;
 
-        foreach (var barricade in barricades)
+        for (int i = 0; i < barricades.Count; i++)
         {
+            var barricade = barricades[i];
             var temporaryVelocity = target.GetVelocity(velocity, barricade);
 
             var temporaryVelocityLength = (float)System.Math.Sqrt(

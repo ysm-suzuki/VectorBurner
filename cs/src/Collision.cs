@@ -10,8 +10,14 @@ namespace VectorBurnerCalculation
         public Point point;
         public List<Point> boundaryLines;
 
-        public Point GetVelocity(Point velocity, Body target)
+        public Point GetVelocity(Point velocity_, Body target)
         {
+            Point velocity = Point.Create
+                (
+                velocity_.x,
+                velocity_.y
+                );
+
             float minDistance = float.MaxValue;
 
             foreach (var boundaryLinePoint in boundaryLines)
@@ -52,12 +58,18 @@ namespace VectorBurnerCalculation
             {
                 var boundaryLineFrom = target.boundaryLines[(i) % boundaryLinesCount];
                 var boundaryLineTo = target.boundaryLines[(i + 1) % boundaryLinesCount];
+                var lineFrom = Point.Create(
+                    target.point.x + boundaryLineFrom.x,
+                    target.point.x + boundaryLineFrom.y);
+                var lineTo = Point.Create(
+                    target.point.x + boundaryLineTo.x,
+                    target.point.x + boundaryLineTo.y);
 
                 var temporaryVelocity = GetVelocity(
                     original,
                     velocity,
-                    boundaryLineFrom,
-                    boundaryLineTo);
+                    lineFrom,
+                    lineTo);
 
                 var temporaryVelocityLength = (float)System.Math.Sqrt(
                     temporaryVelocity.x * temporaryVelocity.x + 
