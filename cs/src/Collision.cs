@@ -10,22 +10,23 @@ namespace VectorBurnerCalculation
         public Point point;
         public List<Point> boundaryLines;
 
-        public Point GetVelocity(Point velocity_, Body target)
+        public Collision Collision(Point velocity, Body target)
         {
-            Point velocity = Point.Create
-                (
-                velocity_.x,
-                velocity_.y
-                );
-
             float minDistance = float.MaxValue;
+            Collision minDistanceCollision = null;
 
             foreach (var boundaryLinePoint in boundaryLines)
             {
                 var originalPoint = Point.Create(
                     point.x + boundaryLinePoint.x,
                     point.y + boundaryLinePoint.y);
-                var temporaryVelocity = GetVelocity(originalPoint, velocity, target);
+                
+                var collision = GetCollision(originalPoint, velocity, target);
+
+                if (collision == null)
+                    continue;
+
+                var temporaryVelocity = collision.velocity;
 
                 var temporaryVelocityLength = (float)System.Math.Sqrt(
                     temporaryVelocity.x * temporaryVelocity.x +
@@ -34,24 +35,21 @@ namespace VectorBurnerCalculation
                 if (temporaryVelocityLength < minDistance)
                 {
                     minDistance = temporaryVelocityLength;
+                    minDistanceCollision = collision;
                 }
             }
-
-            var velocityLength = (float)System.Math.Sqrt(
-                    velocity.x * velocity.x +
-                    velocity.y * velocity.y);
-            var unitVelocity = Point.Create(
-                velocity.x / velocityLength,
-                velocity.y / velocityLength);
-
-            return Point.Create(
-                unitVelocity.x * minDistance,
-                unitVelocity.y * minDistance);
+            
+            return minDistanceCollision;
         }
 
-        private Point GetVelocity(Point original, Point velocity, Body target)
+        private Collision GetCollision(Point original, Point velocity, Body target)
         {
+            var velocityLength = (float)System.Math.Sqrt(
+                velocity.x * velocity.x +
+                velocity.y * velocity.y);
+
             float minDistance = float.MaxValue;
+            Collision minDistanceCollision = null;
 
             int boundaryLinesCount = target.boundaryLines.Count;
             for (int i = 0; i < boundaryLinesCount; i++)
@@ -65,11 +63,16 @@ namespace VectorBurnerCalculation
                     target.point.x + boundaryLineTo.x,
                     target.point.x + boundaryLineTo.y);
 
-                var temporaryVelocity = GetVelocity(
+                var collision = GetCollision(
                     original,
                     velocity,
                     lineFrom,
                     lineTo);
+
+                if (collision == null)
+                    continue;
+
+                var temporaryVelocity = collision.velocity;
 
                 var temporaryVelocityLength = (float)System.Math.Sqrt(
                     temporaryVelocity.x * temporaryVelocity.x + 
@@ -78,22 +81,14 @@ namespace VectorBurnerCalculation
                 if (temporaryVelocityLength < minDistance)
                 {
                     minDistance = temporaryVelocityLength;
+                    minDistanceCollision = collision;
                 }
             }
 
-            var velocityLength = (float)System.Math.Sqrt(
-                    velocity.x * velocity.x +
-                    velocity.y * velocity.y);
-            var unitVelocity = Point.Create(
-                velocity.x / velocityLength,
-                velocity.y / velocityLength);
-
-            return Point.Create(
-                unitVelocity.x * minDistance,
-                unitVelocity.y * minDistance);
+            return minDistanceCollision;
         }
 
-        private Point GetVelocity(
+        private Collision GetCollision(
             Point targetPoint,
             Point targetVelocity,
             Point boundaryLineFrom,
@@ -108,16 +103,23 @@ namespace VectorBurnerCalculation
                 LineSegment.Create(boundaryLineFrom, boundaryLineTo));
 
             if (crossPoint.IsInvalidPoint())
-                return targetVelocity;
+                return null;
 
-            return Point.Create(
-                crossPoint.x - targetPoint.x,
-                crossPoint.y - targetPoint.y);
+            return new Collision
+            {
+                point = crossPoint,
+                velocity = Point.Create(
+                    crossPoint.x - targetPoint.x,
+                    crossPoint.y - targetPoint.y),
+                lineSegment = LineSegment.Create(boundaryLineFrom, boundaryLineTo)
+            };
         }
     }
 
     public class Collision
     {
-
+        public Point point;
+        public Point velocity;
+        public LineSegment lineSegment;
     }
 }

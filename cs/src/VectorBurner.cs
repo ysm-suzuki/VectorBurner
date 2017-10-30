@@ -16,8 +16,14 @@ public class VectorBurner
             && velocity.y == 0)
             return target.point;
 
-        var calculatedVelocity = GetVelocity(target, velocity, barricades);
-        
+        var collision = GetCollision(target, velocity, barricades);
+        Point calculatedVelocity;
+
+        if (collision == null)
+            calculatedVelocity = velocity;
+        else
+            calculatedVelocity = collision.velocity;
+
         var velocityLength = (float)System.Math.Sqrt(
             velocity.x * velocity.x +
             velocity.y * velocity.y);
@@ -129,17 +135,26 @@ public class VectorBurner
 
     // ===============================================================
 
-    private Point GetVelocity(
+    private Collision GetCollision(
         Body target,
         Point velocity,
         List<Body> barricades)
     {
         float minDistance = float.MaxValue;
+        Collision minDistanceCollision = null;
 
         for (int i = 0; i < barricades.Count; i++)
         {
             var barricade = barricades[i];
-            var temporaryVelocity = target.GetVelocity(velocity, barricade);
+
+            var collision = target.Collision(
+                velocity,
+                barricade);
+
+            if (collision == null)
+                continue;
+
+            var temporaryVelocity = collision.velocity;
 
             var temporaryVelocityLength = (float)System.Math.Sqrt(
                 temporaryVelocity.x * temporaryVelocity.x +
@@ -148,21 +163,11 @@ public class VectorBurner
             if (temporaryVelocityLength < minDistance)
             {
                 minDistance = temporaryVelocityLength;
+                minDistanceCollision = collision;
             }
         }
 
-        var velocityLength = (float)System.Math.Sqrt(
-                velocity.x * velocity.x +
-                velocity.y * velocity.y);
-        var unitVelocity = Point.Create(
-            velocity.x / velocityLength,
-            velocity.y / velocityLength);
-
-        var calculatedVelocity = Point.Create(
-            unitVelocity.x * minDistance,
-            unitVelocity.y * minDistance);
-
-        return calculatedVelocity;
+        return minDistanceCollision;
     }
 
 
