@@ -9,7 +9,7 @@ public class VectorBurner
 {
     public Point GetDestination(
         Body target,
-        Point velocity,
+        Vector velocity,
         List<Body> barricades)
     {
         return GetDestination(target, velocity, barricades, true);
@@ -17,7 +17,7 @@ public class VectorBurner
 
     public Point GetDestination(
         Body target,
-        Point velocity,
+        Vector velocity,
         List<Body> barricades,
         bool slip)
     {
@@ -26,7 +26,7 @@ public class VectorBurner
             return target.point;
 
         var collision = GetCollision(target, velocity, barricades);
-        Point calculatedVelocity;
+        Vector calculatedVelocity;
 
         if (collision == null)
             calculatedVelocity = velocity;
@@ -58,14 +58,13 @@ public class VectorBurner
             boundaryLines = target.boundaryLines
         };
 
-        var newVelocity = Point.Create(0, 0);
+        var newVelocity = Vector.Create(0, 0);
         
         if (slip)
         {
-            var newVector = VectorBurnerCalculation.Math.GetLineVector(
+            newVelocity = VectorBurnerCalculation.Math.GetLineVector(
                             Vector.Create(calculatedVelocity.x, calculatedVelocity.y), collision.lineSegment)
                             * (velocityLength - calculatedVelocityLength);
-            newVelocity = Point.Create(newVector.x, newVector.y);
         }
 
         return GetDestination(
@@ -73,26 +72,7 @@ public class VectorBurner
             newVelocity,
             barricades);
     }
-
-
-    public Point GetDestination(
-        Point targetPoint,
-        List<Point> targetBoundaryLines,
-        Point velocity,
-        List<Point> barricadePoints,
-        List<List<Point>> barricadeBoundaryLines)
-    {
-        return GetDestination(
-            new Body
-            {
-                point = targetPoint,
-                boundaryLines = targetBoundaryLines
-            },
-            velocity,
-            ConvertBodies(barricadePoints, barricadeBoundaryLines));
-    }
-
-
+    
 
     // ------------------------------------------------------
 
@@ -106,30 +86,9 @@ public class VectorBurner
         return this;
     }
 
-    public VectorBurner SetTarget(
-        Point targetPoint,
-        List<Point> targetBoundaryLines)
-    {
-        _target = new Body
-        {
-            point = targetPoint,
-            boundaryLines = targetBoundaryLines
-        };
-
-        return this;
-    }
-
     public VectorBurner SetBarricades(List<Body> barricades)
     {
         _barricades = barricades;
-
-        return this;
-    }
-    public VectorBurner SetBarricades(
-        List<Point> barricadePoints,
-        List<List<Point>> barricadeBoundaryLines)
-    {
-        _barricades = ConvertBodies(barricadePoints, barricadeBoundaryLines);
 
         return this;
     }
@@ -141,11 +100,11 @@ public class VectorBurner
 
         return this;
     }
-    public Point GetDestination(Point velocity)
+    public Point GetDestination(Vector velocity)
     {
         return GetDestination(velocity, true);
     }
-    public Point GetDestination(Point velocity, bool slip)
+    public Point GetDestination(Vector velocity, bool slip)
     {
         var destination = GetDestination(_target, velocity, _barricades, slip);
         _target = null;
@@ -158,7 +117,7 @@ public class VectorBurner
 
     private Collision GetCollision(
         Body target,
-        Point velocity,
+        Vector velocity,
         List<Body> barricades)
     {
         float minDistance = float.MaxValue;
@@ -174,13 +133,8 @@ public class VectorBurner
 
             if (collision == null)
                 continue;
-
-            var temporaryVelocity = collision.velocity;
-
-            var temporaryVelocityLength = (float)System.Math.Sqrt(
-                temporaryVelocity.x * temporaryVelocity.x +
-                temporaryVelocity.y * temporaryVelocity.y);
-
+            
+            var temporaryVelocityLength = (float)System.Math.Sqrt(collision.velocity.GetPower());
             if (temporaryVelocityLength < minDistance)
             {
                 minDistance = temporaryVelocityLength;
@@ -191,26 +145,10 @@ public class VectorBurner
         return minDistanceCollision;
     }
 
-
-    private List<Body> ConvertBodies(
-        List<Point> barricadePoints,
-        List<List<Point>> barricadeBoundaryLines)
-    {
-        var barricades = new List<Body>();
-        for (int i = 0; i < barricadePoints.Count; i++)
-            barricades.Add(new Body
-            {
-                point = barricadePoints[i],
-                boundaryLines = barricadeBoundaryLines[i]
-            });
-
-        return barricades;
-    }
-
     // ====================================================
 
     public string Version
     {
-        get { return "0.0.4"; }
+        get { return "0.0.5"; }
     }
 }

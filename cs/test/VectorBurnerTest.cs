@@ -16,9 +16,10 @@ namespace UnitTest
 
         public void Run()
         {
-
             foreach(var testCase in _testCases)
             {
+                Console.WriteLine("------- " + testCase.title + " ---------");
+
                 var vectorBurner = new VectorBurner();
 
                 var target = testCase.target;
@@ -33,10 +34,10 @@ namespace UnitTest
 
                 if (expected.x == result.x
                     && expected.y == result.y)
-                    Console.WriteLine("the test passed at " + testCase.title);
+                    Console.WriteLine("test passed");
                 else
                 {
-                    Console.WriteLine("the test failed at " + testCase.title);
+                    Console.WriteLine("test failed");
                     Console.WriteLine("expected.x : " + expected.x);
                     Console.WriteLine("expected.y : " + expected.y);
                     Console.WriteLine("but");
@@ -52,7 +53,7 @@ namespace UnitTest
             public string title;
 
             public Body target;
-            public Point velocity;
+            public Vector velocity;
             public List<Body> barricades;
             public bool slip = true;
 
@@ -67,7 +68,7 @@ namespace UnitTest
                 target = new Body
                 {
                     point = Point.Create(3, 3),
-                    boundaryLines = new List<Point>
+                    vertices = new List<Point>
                         {
                             Point.Create(-1, 1),
                             Point.Create(1, 1),
@@ -75,13 +76,13 @@ namespace UnitTest
                             Point.Create(-1, -1)
                         }
                 },
-                velocity = Point.Create(0, 20),
+                velocity = Vector.Create(0, 20),
                 barricades = new List<Body>
                 {
                     new Body
                     {
                         point = Point.Create(10, 10),
-                        boundaryLines = new List<Point>
+                        vertices = new List<Point>
                         {
                             Point.Create(-20, 1),
                             Point.Create(20, 1),
@@ -99,7 +100,7 @@ namespace UnitTest
                 target = new Body
                 {
                     point = Point.Create(0, 0),
-                    boundaryLines = new List<Point>
+                    vertices = new List<Point>
                         {
                             Point.Create(-10, 10),
                             Point.Create(10, 10),
@@ -107,13 +108,13 @@ namespace UnitTest
                             Point.Create(-10, -10)
                         }
                 },
-                velocity = Point.Create(0.165677f, 0),
+                velocity = Vector.Create(0.165677f, 0),
                 barricades = new List<Body>
                 {
                     new Body
                     {
                         point = Point.Create(60, 0),
-                        boundaryLines = new List<Point>
+                        vertices = new List<Point>
                         {
                             Point.Create(-10, 50),
                             Point.Create(10, 50),
@@ -131,7 +132,7 @@ namespace UnitTest
                 target = new Body
                 {
                     point = Point.Create(40, 0),
-                    boundaryLines = new List<Point>
+                    vertices = new List<Point>
                         {
                             Point.Create(-10, 10),
                             Point.Create(10, 10),
@@ -139,13 +140,13 @@ namespace UnitTest
                             Point.Create(-10, -10)
                         }
                 },
-                velocity = Point.Create(165.677f, 0),
+                velocity = Vector.Create(165.677f, 0),
                 barricades = new List<Body>
                 {
                     new Body
                     {
                         point = Point.Create(60, 0),
-                        boundaryLines = new List<Point>
+                        vertices = new List<Point>
                         {
                             Point.Create(-10, 50),
                             Point.Create(10, 50),
@@ -163,7 +164,7 @@ namespace UnitTest
                 target = new Body
                 {
                     point = Point.Create(0, 0),
-                    boundaryLines = new List<Point>
+                    vertices = new List<Point>
                         {
                             Point.Create(-10, 10),
                             Point.Create(10, 10),
@@ -171,13 +172,13 @@ namespace UnitTest
                             Point.Create(-10, -10)
                         }
                 },
-                velocity = Point.Create(165.677f, 0),
+                velocity = Vector.Create(165.677f, 0),
                 barricades = new List<Body>
                 {
                     new Body
                     {
                         point = Point.Create(60, 0),
-                        boundaryLines = new List<Point>
+                        vertices = new List<Point>
                         {
                             Point.Create(-10, 50),
                             Point.Create(0, -50),

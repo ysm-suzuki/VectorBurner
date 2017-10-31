@@ -38,6 +38,7 @@ namespace VectorBurnerCalculation
 
             // has no intersection (out of line segment.)
             if (cross1 * cross2 > 0
+            // has no intersection (line segments are parallel.)
                 || (cross1 == 0 && cross2 == 0))
                 return Point.CreateInvalidPoint();
 
