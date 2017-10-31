@@ -190,6 +190,38 @@ namespace UnitTest
                 slip = false,
                 expected = Point.Create(44, 0)
             },
+            // ---------------------------------------
+            new TestCase
+            {
+                title = "Slipped collision with Angled boundaries.",
+                target = new Body
+                {
+                    point = Point.Create(0, 0),
+                    vertices = new List<Point>
+                        {
+                            Point.Create(-10, 10),
+                            Point.Create(10, 10),
+                            Point.Create(10, -10),
+                            Point.Create(-10, -10)
+                        }
+                },
+                velocity = Vector.Create(165.677f, 0),
+                barricades = new List<Body>
+                {
+                    new Body
+                    {
+                        point = Point.Create(60, 0),
+                        vertices = new List<Point>
+                        {
+                            Point.Create(-20, 50),
+                            Point.Create(0, -50),
+                            Point.Create(20, -50),
+                            Point.Create(0, 50),
+                        }
+                    }
+                },
+                expected = Point.Create(44, 0)
+            },
         };
     }
 }

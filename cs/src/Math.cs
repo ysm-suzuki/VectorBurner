@@ -71,15 +71,25 @@ namespace VectorBurnerCalculation
         // Get a unit vector of line that make same direction to the vector.
         public static Vector GetLineVector(Vector vector, LineSegment line)
         {
-            Vector lineVector = Vector.Create(line.from, line.to);
-            Vector lineVectorReverse = Vector.Create(line.to, line.from);
-            double cos = Inner(vector, lineVector) / System.Math.Sqrt((double)vector.GetPower()) * System.Math.Sqrt((double)lineVector.GetPower());
+            var unitVector = vector.GetUnit();
+            var lineVector = Vector.Create(line.from, line.to).GetUnit();
+            var lineVectorReverse = Vector.Create(line.to, line.from).GetUnit();
+
+            if (lineVector.GetPower() == 0)
+                return Vector.Create(0, 0);
+
+            double cos = 
+                Inner(unitVector, lineVector) 
+                / 
+                System.Math.Sqrt((double)unitVector.GetPower())
+                * 
+                System.Math.Sqrt((double)lineVector.GetPower());
 
             while (cos < 0)
                 cos += System.Math.PI * 2;
             while (cos > System.Math.PI * 2)
                 cos -= System.Math.PI * 2;
-            
+
             if (cos == 0 || cos == System.Math.PI)
                 return Vector.Create(0, 0);
 

@@ -21,9 +21,11 @@ public class VectorBurner
         List<Body> barricades,
         bool slip)
     {
-        if (velocity.x == 0
-            && velocity.y == 0)
+        if (velocity.GetPower() == 0)
             return target.point;
+
+
+        var velocityLength = (float)System.Math.Sqrt(velocity.GetPower());
 
         var collision = GetCollision(target, velocity, barricades);
         Vector calculatedVelocity;
@@ -33,15 +35,7 @@ public class VectorBurner
         else
             calculatedVelocity = collision.velocity;
 
-        var velocityLength = (float)System.Math.Sqrt(
-            velocity.x * velocity.x +
-            velocity.y * velocity.y);
-
-        var calculatedVelocityLength = (float)System.Math.Sqrt(
-            calculatedVelocity.x * calculatedVelocity.x +
-            calculatedVelocity.y * calculatedVelocity.y);
-
-
+        var calculatedVelocityLength = (float)System.Math.Sqrt(calculatedVelocity.GetPower());
         if (calculatedVelocityLength == velocityLength)
             return Point.Create(
                 target.point.x + calculatedVelocity.x,
@@ -63,7 +57,8 @@ public class VectorBurner
         if (slip)
         {
             newVelocity = VectorBurnerCalculation.Math.GetLineVector(
-                            Vector.Create(calculatedVelocity.x, calculatedVelocity.y), collision.lineSegment)
+                            calculatedVelocity,
+                            collision.lineSegment)
                             * (velocityLength - calculatedVelocityLength);
         }
 
@@ -149,6 +144,6 @@ public class VectorBurner
 
     public string Version
     {
-        get { return "0.0.5"; }
+        get { return "0.0.6"; }
     }
 }
