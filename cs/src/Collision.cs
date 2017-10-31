@@ -105,12 +105,31 @@ namespace VectorBurnerCalculation
             if (crossPoint.IsInvalidPoint())
                 return null;
 
+            var velocityLength = (float)System.Math.Sqrt(
+                targetVelocity.x * targetVelocity.x +
+                targetVelocity.y * targetVelocity.y);
+
+            var temporaryVelocity = Point.Create(
+                    crossPoint.x - targetPoint.x,
+                    crossPoint.y - targetPoint.y);
+            var temporaryVelocityLength = (float)System.Math.Sqrt(
+                temporaryVelocity.x * temporaryVelocity.x +
+                temporaryVelocity.y * temporaryVelocity.y);
+            var normalizedTemporaryVelocity = Point.Create(
+                    temporaryVelocity.x / temporaryVelocityLength,
+                    temporaryVelocity.y / temporaryVelocityLength);
+
+            var collisionVelocity = velocityLength > temporaryVelocityLength
+                ? temporaryVelocityLength
+                : velocityLength;
+
+
             return new Collision
             {
                 point = crossPoint,
                 velocity = Point.Create(
-                    crossPoint.x - targetPoint.x,
-                    crossPoint.y - targetPoint.y),
+                    normalizedTemporaryVelocity.x * collisionVelocity,
+                    normalizedTemporaryVelocity.y * collisionVelocity),
                 lineSegment = LineSegment.Create(boundaryLineFrom, boundaryLineTo)
             };
         }

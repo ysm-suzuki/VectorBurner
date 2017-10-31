@@ -90,7 +90,39 @@ namespace UnitTest
                     }
                 },
                 expected = Point.Create(3, 8)
-            }
+            },
+
+            new TestCase
+            {
+                title = "test2",
+                target = new Body
+                {
+                    point = Point.Create(0, 0),
+                    boundaryLines = new List<Point>
+                        {
+                            Point.Create(-10, 10),
+                            Point.Create(10, 10),
+                            Point.Create(10, -10),
+                            Point.Create(-10, -10)
+                        }
+                },
+                velocity = Point.Create(0.165677f, 0),
+                barricades = new List<Body>
+                {
+                    new Body
+                    {
+                        point = Point.Create(60, 0),
+                        boundaryLines = new List<Point>
+                        {
+                            Point.Create(-10, 50),
+                            Point.Create(10, 50),
+                            Point.Create(10, -50),
+                            Point.Create(-10, -50),
+                        }
+                    }
+                },
+                expected = Point.Create(0.165677f, 0)
+            },
         };
     }
 }
