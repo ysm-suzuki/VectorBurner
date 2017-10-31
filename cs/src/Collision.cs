@@ -52,6 +52,23 @@ namespace VectorBurnerCalculation
             Collision minDistanceCollision = null;
 
             int boundaryLinesCount = target.boundaryLines.Count;
+
+            var targetLineSegments = new List<LineSegment>();
+            for (int i = 0; i < boundaryLinesCount; i++)
+            {
+                var boundaryLineFrom = target.boundaryLines[(i) % boundaryLinesCount];
+                var boundaryLineTo = target.boundaryLines[(i + 1) % boundaryLinesCount];
+                var lineFrom = Point.Create(
+                    target.point.x + boundaryLineFrom.x,
+                    target.point.x + boundaryLineFrom.y);
+                var lineTo = Point.Create(
+                    target.point.x + boundaryLineTo.x,
+                    target.point.x + boundaryLineTo.y);
+
+                targetLineSegments.Add(LineSegment.Create(lineFrom, lineTo));
+            }
+
+
             for (int i = 0; i < boundaryLinesCount; i++)
             {
                 var boundaryLineFrom = target.boundaryLines[(i) % boundaryLinesCount];
@@ -71,7 +88,7 @@ namespace VectorBurnerCalculation
 
                 if (collision == null)
                     continue;
-
+                
                 var temporaryVelocity = collision.velocity;
 
                 var temporaryVelocityLength = (float)System.Math.Sqrt(
@@ -83,7 +100,27 @@ namespace VectorBurnerCalculation
                     minDistance = temporaryVelocityLength;
                     minDistanceCollision = collision;
                 }
+
+
+                // check if original + velocity is with in inner target boundary.
+                var nextPoint = Point.Create(
+                minDistanceCollision.point.x + minDistanceCollision.velocity.x,
+                minDistanceCollision.point.y + minDistanceCollision.velocity.y);
+                
+                if (VectorBurnerCalculation.Math.IsWithIn(nextPoint, targetLineSegments))
+                {
+                    return new Collision
+                    {
+                        point = minDistanceCollision.point,
+                        velocity = Point.Create(0, 0),
+                        lineSegment = minDistanceCollision.lineSegment
+                    };
+                }
+                //
             }
+
+
+
 
             return minDistanceCollision;
         }

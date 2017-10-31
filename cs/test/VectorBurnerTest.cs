@@ -37,11 +37,11 @@ namespace UnitTest
                 else
                 {
                     Console.WriteLine("the test failed at " + testCase.title);
-                    Console.WriteLine("result.x : " + result.x);
-                    Console.WriteLine("result.y : " + result.y);
-                    Console.WriteLine("but");
                     Console.WriteLine("expected.x : " + expected.x);
                     Console.WriteLine("expected.y : " + expected.y);
+                    Console.WriteLine("but");
+                    Console.WriteLine("result.x : " + result.x);
+                    Console.WriteLine("result.y : " + result.y);
                 }
             }
         }
@@ -62,7 +62,7 @@ namespace UnitTest
         {
             new TestCase
             {
-                title = "test1",
+                title = "Collide with (0, 20) velocity",
                 target = new Body
                 {
                     point = Point.Create(3, 3),
@@ -91,10 +91,10 @@ namespace UnitTest
                 },
                 expected = Point.Create(3, 8)
             },
-
+            // ---------------------------------------
             new TestCase
             {
-                title = "test2",
+                title = "Don not collide with (0.165677f, 0) velocity",
                 target = new Body
                 {
                     point = Point.Create(0, 0),
@@ -122,6 +122,38 @@ namespace UnitTest
                     }
                 },
                 expected = Point.Create(0.165677f, 0)
+            },
+            // ---------------------------------------
+            new TestCase
+            {
+                title = "Collide after collided",
+                target = new Body
+                {
+                    point = Point.Create(40, 0),
+                    boundaryLines = new List<Point>
+                        {
+                            Point.Create(-10, 10),
+                            Point.Create(10, 10),
+                            Point.Create(10, -10),
+                            Point.Create(-10, -10)
+                        }
+                },
+                velocity = Point.Create(165.677f, 0),
+                barricades = new List<Body>
+                {
+                    new Body
+                    {
+                        point = Point.Create(60, 0),
+                        boundaryLines = new List<Point>
+                        {
+                            Point.Create(-10, 50),
+                            Point.Create(10, 50),
+                            Point.Create(10, -50),
+                            Point.Create(-10, -50),
+                        }
+                    }
+                },
+                expected = Point.Create(40, 0)
             },
         };
     }
