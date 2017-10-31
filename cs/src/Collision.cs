@@ -75,10 +75,10 @@ namespace VectorBurnerCalculation
                 var boundaryLineTo = target.boundaryLines[(i + 1) % boundaryLinesCount];
                 var lineFrom = Point.Create(
                     target.point.x + boundaryLineFrom.x,
-                    target.point.x + boundaryLineFrom.y);
+                    target.point.y + boundaryLineFrom.y);
                 var lineTo = Point.Create(
                     target.point.x + boundaryLineTo.x,
-                    target.point.x + boundaryLineTo.y);
+                    target.point.y + boundaryLineTo.y);
 
                 var collision = GetCollision(
                     original,
@@ -88,7 +88,7 @@ namespace VectorBurnerCalculation
 
                 if (collision == null)
                     continue;
-                
+
                 var temporaryVelocity = collision.velocity;
 
                 var temporaryVelocityLength = (float)System.Math.Sqrt(
@@ -118,9 +118,6 @@ namespace VectorBurnerCalculation
                 }
                 //
             }
-
-
-
 
             return minDistanceCollision;
         }
@@ -152,21 +149,30 @@ namespace VectorBurnerCalculation
             var temporaryVelocityLength = (float)System.Math.Sqrt(
                 temporaryVelocity.x * temporaryVelocity.x +
                 temporaryVelocity.y * temporaryVelocity.y);
+
+
+            if (temporaryVelocityLength == 0)
+                return new Collision
+                {
+                    point = crossPoint,
+                    velocity = Point.Create(0, 0),
+                    lineSegment = LineSegment.Create(boundaryLineFrom, boundaryLineTo)
+                };
+
             var normalizedTemporaryVelocity = Point.Create(
                     temporaryVelocity.x / temporaryVelocityLength,
                     temporaryVelocity.y / temporaryVelocityLength);
 
-            var collisionVelocity = velocityLength > temporaryVelocityLength
+            var collisionVelocityLength = velocityLength > temporaryVelocityLength
                 ? temporaryVelocityLength
                 : velocityLength;
-
 
             return new Collision
             {
                 point = crossPoint,
                 velocity = Point.Create(
-                    normalizedTemporaryVelocity.x * collisionVelocity,
-                    normalizedTemporaryVelocity.y * collisionVelocity),
+                    normalizedTemporaryVelocity.x * collisionVelocityLength,
+                    normalizedTemporaryVelocity.y * collisionVelocityLength),
                 lineSegment = LineSegment.Create(boundaryLineFrom, boundaryLineTo)
             };
         }

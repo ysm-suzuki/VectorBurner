@@ -143,7 +143,11 @@ public class VectorBurner
     }
     public Point GetDestination(Point velocity)
     {
-        var destination = GetDestination(_target, velocity, _barricades);
+        return GetDestination(velocity, true);
+    }
+    public Point GetDestination(Point velocity, bool slip)
+    {
+        var destination = GetDestination(_target, velocity, _barricades, slip);
         _target = null;
         _barricades = null;
         return destination;
@@ -207,6 +211,6 @@ public class VectorBurner
 
     public string Version
     {
-        get { return "0.0.3"; }
+        get { return "0.0.4"; }
     }
 }

@@ -29,7 +29,7 @@ namespace UnitTest
                 var result = vectorBurner
                     .SetTarget(target)
                     .SetBarricades(barricades)
-                    .GetDestination(velocity);
+                    .GetDestination(velocity, testCase.slip);
 
                 if (expected.x == result.x
                     && expected.y == result.y)
@@ -54,6 +54,7 @@ namespace UnitTest
             public Body target;
             public Point velocity;
             public List<Body> barricades;
+            public bool slip = true;
 
             public Point expected;
         }
@@ -154,6 +155,39 @@ namespace UnitTest
                     }
                 },
                 expected = Point.Create(40, 0)
+            },
+            // ---------------------------------------
+            new TestCase
+            {
+                title = "Non-slipped collision with Angled boundaries.",
+                target = new Body
+                {
+                    point = Point.Create(0, 0),
+                    boundaryLines = new List<Point>
+                        {
+                            Point.Create(-10, 10),
+                            Point.Create(10, 10),
+                            Point.Create(10, -10),
+                            Point.Create(-10, -10)
+                        }
+                },
+                velocity = Point.Create(165.677f, 0),
+                barricades = new List<Body>
+                {
+                    new Body
+                    {
+                        point = Point.Create(60, 0),
+                        boundaryLines = new List<Point>
+                        {
+                            Point.Create(-10, 50),
+                            Point.Create(0, -50),
+                            Point.Create(10, -50),
+                            Point.Create(0, 50),
+                        }
+                    }
+                },
+                slip = false,
+                expected = Point.Create(44, 0)
             },
         };
     }
