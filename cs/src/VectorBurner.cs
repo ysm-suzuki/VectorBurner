@@ -202,4 +202,11 @@ public class VectorBurner
 
         return barricades;
     }
+
+    // ====================================================
+
+    public string Version
+    {
+        get { return "0.0.1"; }
+    }
 }
