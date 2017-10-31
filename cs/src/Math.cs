@@ -32,12 +32,20 @@ namespace VectorBurnerCalculation
             Vector vector1 = Vector.Create(line1.from, line1.to);
             Vector vector2 = Vector.Create(line1.from, line2.from);
             Vector vector3 = Vector.Create(line1.from, line2.to);
+
             Vector vector4 = Vector.Create(line2.from, line2.to);
+            Vector vector5 = Vector.Create(line2.from, line1.from);
+            Vector vector6 = Vector.Create(line2.from, line1.to);
+
             double cross1 = Cross(vector1, vector2);
             double cross2 = Cross(vector1, vector3);
 
+            double cross3 = Cross(vector4, vector5);
+            double cross4 = Cross(vector4, vector6);
+
             // has no intersection (out of line segment.)
             if (cross1 * cross2 > 0
+                || cross3 * cross4 > 0
             // has no intersection (line segments are parallel.)
                 || (cross1 == 0 && cross2 == 0))
                 return Point.CreateInvalidPoint();

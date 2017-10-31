@@ -220,7 +220,7 @@ namespace UnitTest
                         }
                     }
                 },
-                expected = Point.Create(44, 0)
+                expected = Point.Create(-1, -1)
             },
         };
     }
