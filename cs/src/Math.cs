@@ -76,6 +76,22 @@ namespace VectorBurnerCalculation
             return true;
         }
 
+        public static bool IsOnLine(Point point, LineSegment line)
+        {
+            var vector1 = Vector.Create(point, line.from);
+            var vector2 = Vector.Create(point, line.to);
+
+            if (Cross(vector1.GetUnit(), vector2.GetUnit()) != 0)
+                return false;
+            
+            var linVector = Vector.Create(line.from, line.to);
+
+            return 
+                System.Math.Sqrt(vector1.GetPower()) + System.Math.Sqrt(vector2.GetPower()) 
+                <=
+                System.Math.Sqrt(linVector.GetPower());
+        }
+
         // Get a unit vector of line that make same direction to the vector.
         public static Vector GetLineVector(Vector vector, LineSegment line)
         {
