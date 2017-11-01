@@ -65,9 +65,13 @@ public class VectorBurner
         if (remainingVerocityLength == 0)
             return newPoint;
 
+        // bounce
+        newPoint += calculatedVelocity.GetUnit() * -0.2f;
+
         var remainingVerocity = velocity.GetUnit() * remainingVerocityLength;
         var temporaryPoint = newPoint + remainingVerocity;
-        var projectionPoint = VectorBurnerCalculation.Math.GetProjectionPoint(temporaryPoint, collision.lineSegment);
+        var projectionPoint = collision.projectionPoint;
+        
 
         var newBarricades = new List<Body>();
         foreach (var barricade in barricades)
@@ -80,7 +84,7 @@ public class VectorBurner
                     point = newPoint,
                     boundaryLines = target.boundaryLines,
                 },
-                Vector.Create(newPoint, projectionPoint),
+                Vector.Create(collision.point, projectionPoint),
                 newBarricades,
                 slip,
                 recursiveCount + 1
@@ -164,6 +168,6 @@ public class VectorBurner
 
     public string Version
     {
-        get { return "0.0.8"; }
+        get { return "0.0.9"; }
     }
 }

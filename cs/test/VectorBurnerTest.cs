@@ -219,7 +219,39 @@ namespace UnitTest
                         }
                     }
                 },
-                expected = Point.Create(50.19054f, -0.9527283f)
+                expected = Point.Create(38.58578f, -3.928886f)
+            },
+            // ---------------------------------------
+            new TestCase
+            {
+                title = "Slipped collision with Angled boundaries.",
+                target = new Body
+                {
+                    point = Point.Create(77.96158f, 0),
+                    vertices = new List<Point>
+                        {
+                            Point.Create(-10, 10),
+                            Point.Create(10, 10),
+                            Point.Create(10, -10),
+                            Point.Create(-10, -10)
+                        }
+                },
+                velocity = Vector.Create(0.1656639f, 0),
+                barricades = new List<Body>
+                {
+                    new Body
+                    {
+                        point = Point.Create(60, 0),
+                        vertices = new List<Point>
+                        {
+                            Point.Create(-20, 50),
+                            Point.Create(100, -50),
+                            Point.Create(120, -50),
+                            Point.Create(0, 50),
+                        }
+                    }
+                },
+                expected = Point.Create(77.87511f, -0.06258774f)
             },
         };
     }

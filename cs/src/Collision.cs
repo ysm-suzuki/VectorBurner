@@ -110,6 +110,10 @@ namespace VectorBurnerCalculation
                 minDistance = collisionVelocityLength;
                 minDistanceCollision = collision;
                 minDistanceCollision.target = target;
+                minDistanceCollision.projectionPoint = 
+                    VectorBurnerCalculation.Math.GetProjectionPoint(
+                        original + velocity,
+                        minDistanceCollision.lineSegment);
 
                 // check if original + velocity is with in inner target boundary.
                 var nextPoint = Point.Create(
@@ -123,7 +127,11 @@ namespace VectorBurnerCalculation
                         point = minDistanceCollision.point,
                         velocity = Vector.Create(0, 0),
                         lineSegment = minDistanceCollision.lineSegment,
-                        target = target
+                        target = target,
+                        projectionPoint =
+                            VectorBurnerCalculation.Math.GetProjectionPoint(
+                                original + velocity,
+                                minDistanceCollision.lineSegment),
                     };
                 }
             }
@@ -160,12 +168,11 @@ namespace VectorBurnerCalculation
                 ? temporaryVelocityLength
                 : velocityLength;
 
-
             return new Collision
             {
                 point = crossPoint,
                 velocity = normalizedTemporaryVelocity * collisionVelocityLength,
-                lineSegment = LineSegment.Create(boundaryLineFrom, boundaryLineTo)
+                lineSegment = LineSegment.Create(boundaryLineFrom, boundaryLineTo),
             };
         }
 
@@ -187,8 +194,11 @@ namespace VectorBurnerCalculation
     {
         public Point point = null;
         public Vector velocity = null;
+
+        // has value when collides.
         public LineSegment lineSegment = null;
         public Body target = null;
+        public Point projectionPoint = null;
 
         public bool hasNoCollision = false;
 
