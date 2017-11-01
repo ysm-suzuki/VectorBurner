@@ -10,7 +10,8 @@ public class VectorBurner
     public Point GetDestination(
         Body target,
         Vector velocity,
-        List<Body> barricades)
+        List<Body> barricades,
+        float bounce)
     {
         if (velocity == null
             || velocity.GetPower() == 0)
@@ -28,8 +29,13 @@ public class VectorBurner
         var calculatedVelocityLength = (float)System.Math.Sqrt(calculatedVelocity.GetPower());
 
         var velocityLength = (float)System.Math.Sqrt(velocity.GetPower());
-        
-        return target.point + calculatedVelocity;
+
+        var newPoint = target.point + calculatedVelocity;
+
+        var bounceVector =
+            VectorBurnerCalculation.Math.Rotate(collision.lineVector, System.Math.PI / 2);
+
+        return newPoint + bounceVector.GetUnit() * bounce;
     }
 
 
@@ -37,6 +43,7 @@ public class VectorBurner
 
     private Body _target = null;
     private List<Body> _barricades = null;
+    private float _bounce = 1.0f;
 
     public VectorBurner SetTarget(Body target)
     {
@@ -59,9 +66,15 @@ public class VectorBurner
 
         return this;
     }
+    public VectorBurner SetBounce(float bounce)
+    {
+        _bounce = bounce;
+
+        return this;
+    }
     public Point GetDestination(Vector velocity)
     {
-        var destination = GetDestination(_target, velocity, _barricades);
+        var destination = GetDestination(_target, velocity, _barricades, _bounce);
         _target = null;
         _barricades = null;
         return destination;
@@ -105,6 +118,6 @@ public class VectorBurner
 
     public string Version
     {
-        get { return "0.0.11"; }
+        get { return "0.0.12"; }
     }
 }

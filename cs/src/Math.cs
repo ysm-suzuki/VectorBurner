@@ -65,22 +65,22 @@ namespace VectorBurnerCalculation
             // has no intersection (out of line segment.)
             return Point.CreateInvalidPoint();
         }
-
-        public static Vector Rotate(Vector vector, float radian)
+        
+        public static Vector Rotate(Vector vector, double radian)
         {
-            float sin = (float)System.Math.Sin(radian);
-            float cos = (float)System.Math.Cos(radian);
+            var sin = System.Math.Sin(radian);
+            var cos = System.Math.Cos(radian);
 
             return Vector.Create(
-                            vector.x * cos - vector.y * sin,
-                            vector.x * sin + vector.y * cos);
+                            (float)(vector.x * cos - vector.y * sin),
+                            (float)(vector.x * sin + vector.y * cos));
         }
 
         // shape: A convex polygon with clockwise rotation only.
         public static bool IsWithIn(Point point, List<LineSegment> shape)
         {
             foreach (LineSegment line in shape)
-                if (Cross(Vector.Create(point, line.from), Vector.Create(point, line.to)) > 0)
+                if (Cross(Vector.Create(point, line.from), Vector.Create(point, line.to)) <= 0)
                     return false;
 
             return true;

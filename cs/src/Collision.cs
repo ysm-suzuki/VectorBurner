@@ -104,9 +104,10 @@ namespace VectorBurnerCalculation
                     target.point.x + boundaryLine.to.x,
                     target.point.y + boundaryLine.to.y);
 
-                if (VectorBurnerCalculation.Math.IsOnLine(original, boundaryLine))
-                    continue;
-                if (VectorBurnerCalculation.Math.IsInside(original, boundaryLine))
+                var nextPoint = original + velocity;
+
+                if (VectorBurnerCalculation.Math.IsOnLine(original, boundaryLine)
+                    && !VectorBurnerCalculation.Math.IsWithIn(nextPoint, target.boundaryLines))
                     continue;
                 
                 var collision = GetCollision(
@@ -129,26 +130,6 @@ namespace VectorBurnerCalculation
                     VectorBurnerCalculation.Math.GetProjectionPoint(
                         original + velocity,
                         minDistanceCollision.lineSegment);
-
-                // check if original + velocity is with in inner target boundary.
-                var nextPoint = Point.Create(
-                minDistanceCollision.point.x + minDistanceCollision.velocity.x,
-                minDistanceCollision.point.y + minDistanceCollision.velocity.y);
-                
-                if (VectorBurnerCalculation.Math.IsWithIn(nextPoint, target.boundaryLines))
-                {
-                    return new Collision
-                    {
-                        point = minDistanceCollision.point,
-                        velocity = Vector.Create(0, 0),
-                        lineSegment = minDistanceCollision.lineSegment,
-                        target = target,
-                        projectionPoint =
-                            VectorBurnerCalculation.Math.GetProjectionPoint(
-                                original + velocity,
-                                minDistanceCollision.lineSegment),
-                    };
-                }
             }
 
             return minDistanceCollision;
