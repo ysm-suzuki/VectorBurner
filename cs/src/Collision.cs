@@ -93,7 +93,9 @@ namespace VectorBurnerCalculation
 
                 if (VectorBurnerCalculation.Math.IsOnLine(original, boundaryLine))
                     continue;
-
+                if (VectorBurnerCalculation.Math.IsInside(original, boundaryLine))
+                    continue;
+                
                 var collision = GetCollision(
                     original,
                     velocity,

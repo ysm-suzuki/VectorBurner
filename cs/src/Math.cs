@@ -82,8 +82,13 @@ namespace VectorBurnerCalculation
             foreach (LineSegment line in shape)
                 if (Cross(Vector.Create(point, line.from), Vector.Create(point, line.to)) > 0)
                     return false;
-            
+
             return true;
+        }
+        // line: A convex polygon with clockwise rotation only.
+        public static bool IsInside(Point point, LineSegment line)
+        {
+            return Cross(Vector.Create(point, line.from), Vector.Create(point, line.to)) > 0;
         }
 
         public static bool IsOnLine(Point point, LineSegment line)
@@ -129,37 +134,6 @@ namespace VectorBurnerCalculation
             var projectionPoin = line.from + lineVector * (float)ratio;
 
             return projectionPoin;
-        }
-
-        // Get a unit vector of line that make same direction to the vector.
-        public static Vector GetLineVector(Vector vector, LineSegment line)
-        {
-            var unitVector = vector.GetUnit();
-            var lineVector = Vector.Create(line.from, line.to).GetUnit();
-            var lineVectorReverse = Vector.Create(line.to, line.from).GetUnit();
-
-            if (lineVector.GetPower() == 0)
-                return Vector.Create(0, 0);
-
-            double cos = 
-                Inner(unitVector, lineVector) 
-                / 
-                System.Math.Sqrt((double)unitVector.GetPower())
-                * 
-                System.Math.Sqrt((double)lineVector.GetPower());
-
-            while (cos < 0)
-                cos += System.Math.PI * 2;
-            while (cos > System.Math.PI * 2)
-                cos -= System.Math.PI * 2;
-
-            if (cos == 0 || cos == System.Math.PI)
-                return Vector.Create(0, 0);
-
-            if (cos < System.Math.PI / 2 || cos > System.Math.PI * 3 / 2)
-                return lineVector.GetUnit();
-            else
-                return lineVectorReverse.GetUnit();
         }
     }
 }

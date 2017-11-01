@@ -30,7 +30,7 @@ namespace UnitTest
                 var result = vectorBurner
                     .SetTarget(target)
                     .SetBarricades(barricades)
-                    .GetDestination(velocity, testCase.slip);
+                    .GetDestination(velocity);
 
                 if (expected.FuzzyEquals(result, 0.01f))
                     Console.WriteLine("test passed");
@@ -54,7 +54,6 @@ namespace UnitTest
             public Body target;
             public Vector velocity;
             public List<Body> barricades;
-            public bool slip = true;
 
             public Point expected;
         }
@@ -180,78 +179,13 @@ namespace UnitTest
                         vertices = new List<Point>
                         {
                             Point.Create(-10, 50),
-                            Point.Create(0, -50),
+                            Point.Create(0, 50),
                             Point.Create(10, -50),
-                            Point.Create(0, 50),
-                        }
-                    }
-                },
-                slip = false,
-                expected = Point.Create(44, 0)
-            },
-            // ---------------------------------------
-            new TestCase
-            {
-                title = "Slipped collision with Angled boundaries.",
-                target = new Body
-                {
-                    point = Point.Create(0, 0),
-                    vertices = new List<Point>
-                        {
-                            Point.Create(-10, 10),
-                            Point.Create(10, 10),
-                            Point.Create(10, -10),
-                            Point.Create(-10, -10)
-                        }
-                },
-                velocity = Vector.Create(55, 0),
-                barricades = new List<Body>
-                {
-                    new Body
-                    {
-                        point = Point.Create(60, 0),
-                        vertices = new List<Point>
-                        {
-                            Point.Create(-20, 50),
                             Point.Create(0, -50),
-                            Point.Create(20, -50),
-                            Point.Create(0, 50),
                         }
                     }
                 },
-                expected = Point.Create(38.58578f, -3.928886f)
-            },
-            // ---------------------------------------
-            new TestCase
-            {
-                title = "Slipped collision with Angled boundaries.",
-                target = new Body
-                {
-                    point = Point.Create(77.96158f, 0),
-                    vertices = new List<Point>
-                        {
-                            Point.Create(-10, 10),
-                            Point.Create(10, 10),
-                            Point.Create(10, -10),
-                            Point.Create(-10, -10)
-                        }
-                },
-                velocity = Vector.Create(0.1656639f, 0),
-                barricades = new List<Body>
-                {
-                    new Body
-                    {
-                        point = Point.Create(60, 0),
-                        vertices = new List<Point>
-                        {
-                            Point.Create(-20, 50),
-                            Point.Create(100, -50),
-                            Point.Create(120, -50),
-                            Point.Create(0, 50),
-                        }
-                    }
-                },
-                expected = Point.Create(77.87511f, -0.06258774f)
+                expected = Point.Create(44, 0)
             },
         };
     }
