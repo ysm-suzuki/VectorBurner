@@ -8,6 +8,14 @@ namespace VectorBurnerCalculation
     public class Body
     {
         public Point point;
+
+        public float radius = -1;
+
+        public bool isCircle
+        {
+            get { return radius > 0; }
+        }
+
         public List<Point> vertices
         {
             get
@@ -37,15 +45,20 @@ namespace VectorBurnerCalculation
             }
         }
 
-
         private List<LineSegment> _boundaryLines = new List<LineSegment>();
 
 
         public Collision GetCollision(Vector velocity, Body target)
         {
+            if (isCircle)
+                return GetCollision(
+                            point + velocity.GetUnit() * radius,
+                            velocity,
+                            target);
+                    
             float minDistance = float.MaxValue;
             Collision minDistanceCollision = Collision.Non;
-
+            
             foreach (var vertex in vertices)
             {
                 var originalPoint = Point.Create(
