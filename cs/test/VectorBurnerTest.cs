@@ -32,8 +32,7 @@ namespace UnitTest
                     .SetBarricades(barricades)
                     .GetDestination(velocity, testCase.slip);
 
-                if (expected.x == result.x
-                    && expected.y == result.y)
+                if (expected.FuzzyEquals(result, 0.01f))
                     Console.WriteLine("test passed");
                 else
                 {
@@ -96,7 +95,7 @@ namespace UnitTest
             // ---------------------------------------
             new TestCase
             {
-                title = "Don not collide with (0.165677f, 0) velocity",
+                title = "Do not collide with (0.165677f, 0) velocity",
                 target = new Body
                 {
                     point = Point.Create(0, 0),
@@ -205,7 +204,7 @@ namespace UnitTest
                             Point.Create(-10, -10)
                         }
                 },
-                velocity = Vector.Create(165.677f, 0),
+                velocity = Vector.Create(55, 0),
                 barricades = new List<Body>
                 {
                     new Body
@@ -220,7 +219,7 @@ namespace UnitTest
                         }
                     }
                 },
-                expected = Point.Create(-1, -1)
+                expected = Point.Create(50.19054f, -0.9527283f)
             },
         };
     }

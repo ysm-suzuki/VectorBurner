@@ -66,6 +66,16 @@ namespace VectorBurnerCalculation
             return Point.CreateInvalidPoint();
         }
 
+        public static Vector Rotate(Vector vector, float radian)
+        {
+            float sin = (float)System.Math.Sin(radian);
+            float cos = (float)System.Math.Cos(radian);
+
+            return Vector.Create(
+                            vector.x * cos - vector.y * sin,
+                            vector.x * sin + vector.y * cos);
+        }
+
         // shape: A convex polygon with clockwise rotation only.
         public static bool IsWithIn(Point point, List<LineSegment> shape)
         {
@@ -90,6 +100,35 @@ namespace VectorBurnerCalculation
                 System.Math.Sqrt(vector1.GetPower()) + System.Math.Sqrt(vector2.GetPower()) 
                 <=
                 System.Math.Sqrt(linVector.GetPower());
+        }
+
+        public static Point GetProjectionPoint(Point point, LineSegment line)
+        {
+            if (IsOnLine(point, line))
+                return point;
+
+            var vector1 = Vector.Create(point, line.from);
+            var vector2 = Vector.Create(point, line.to);
+            var lineVector = Vector.Create(line.from, line.to);
+            var crossedLineVector = Vector
+                                        .Create(line.from, line.to);
+            Rotate(crossedLineVector, (float)System.Math.PI / 2);
+            crossedLineVector -= vector1;
+
+            var cross1 = Cross(crossedLineVector, vector1);
+            var cross2 = Cross(crossedLineVector, vector2);
+
+            
+            if (cross1 == 0 && cross2 == 0)
+                Point.CreateInvalidPoint();
+
+            double ratio = System.Math.Sqrt(vector1.GetPower()) 
+                / 
+                (System.Math.Sqrt(vector1.GetPower()) + System.Math.Sqrt(vector2.GetPower()));
+
+            var projectionPoin = line.from + lineVector * (float)ratio;
+
+            return projectionPoin;
         }
 
         // Get a unit vector of line that make same direction to the vector.

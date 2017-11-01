@@ -21,51 +21,70 @@ public class VectorBurner
         List<Body> barricades,
         bool slip)
     {
-        if (velocity.GetPower() == 0)
-            return target.point;
+        return GetDestination(target, velocity, barricades, slip, 0);
+    }
 
+    public Point GetDestination(
+        Body target,
+        Vector velocity,
+        List<Body> barricades,
+        bool slip,
+        int recursiveCount)
+    {
+        if (velocity == null
+            || velocity.GetPower() == 0)
+            return target.point;
+        if (barricades == null
+            || barricades.Count == 0)
+            return target.point + velocity;
+        if (recursiveCount >= 8)
+        {
+            System.Diagnostics.Debug.Assert(false, "GetDestination recurse more than 8 times.");
+            return target.point;
+        }
+
+        var collision = GetCollision(target, velocity, barricades);
+
+        if (collision.hasNoCollision)
+            return target.point + velocity;
+
+        var calculatedVelocity = collision.velocity;
+        var calculatedVelocityLength = (float)System.Math.Sqrt(calculatedVelocity.GetPower());
 
         var velocityLength = (float)System.Math.Sqrt(velocity.GetPower());
 
-        var collision = GetCollision(target, velocity, barricades);
-        Vector calculatedVelocity;
+        var newPoint = target.point + calculatedVelocity;
 
-        if (collision == null)
-            calculatedVelocity = velocity;
-        else
-            calculatedVelocity = collision.velocity;
-
-        var calculatedVelocityLength = (float)System.Math.Sqrt(calculatedVelocity.GetPower());
-        if (calculatedVelocityLength == velocityLength)
-            return Point.Create(
-                target.point.x + calculatedVelocity.x,
-                target.point.y + calculatedVelocity.y);
-
-        if (calculatedVelocityLength <= 0)
-            return target.point;
-
-        var newTarget = new Body
-        {
-            point = Point.Create(
-                target.point.x + calculatedVelocity.x,
-                target.point.y + calculatedVelocity.y),
-            boundaryLines = target.boundaryLines
-        };
-
-        var newVelocity = Vector.Create(0, 0);
+        if (!slip)
+            return newPoint;
         
-        if (slip)
-        {
-            newVelocity = VectorBurnerCalculation.Math.GetLineVector(
-                            calculatedVelocity,
-                            collision.lineSegment)
-                            * (velocityLength - calculatedVelocityLength);
-        }
+        if (VectorBurnerCalculation.Math.Inner(collision.velocity, collision.lineVector) == 0)
+            return newPoint;
+
+        var remainingVerocityLength = velocityLength - calculatedVelocityLength;
+        if (remainingVerocityLength == 0)
+            return newPoint;
+
+        var remainingVerocity = velocity.GetUnit() * remainingVerocityLength;
+        var temporaryPoint = newPoint + remainingVerocity;
+        var projectionPoint = VectorBurnerCalculation.Math.GetProjectionPoint(temporaryPoint, collision.lineSegment);
+
+        var newBarricades = new List<Body>();
+        foreach (var barricade in barricades)
+            if (barricade != collision.target)
+                newBarricades.Add(barricade);
 
         return GetDestination(
-            newTarget,
-            newVelocity,
-            barricades);
+                new Body
+                {
+                    point = newPoint,
+                    boundaryLines = target.boundaryLines,
+                },
+                Vector.Create(newPoint, projectionPoint),
+                newBarricades,
+                slip,
+                recursiveCount + 1
+            );
     }
     
 
@@ -116,17 +135,18 @@ public class VectorBurner
         List<Body> barricades)
     {
         float minDistance = float.MaxValue;
-        Collision minDistanceCollision = null;
+        Collision minDistanceCollision = Collision.Non;
 
         for (int i = 0; i < barricades.Count; i++)
         {
             var barricade = barricades[i];
 
-            var collision = target.Collision(
+            var collision = target.GetCollision(
                 velocity,
                 barricade);
 
-            if (collision == null)
+            if (collision.hasNoCollision
+                || barricade.IsVertex(collision.point))
                 continue;
             
             var temporaryVelocityLength = (float)System.Math.Sqrt(collision.velocity.GetPower());
@@ -144,6 +164,6 @@ public class VectorBurner
 
     public string Version
     {
-        get { return "0.0.7"; }
+        get { return "0.0.8"; }
     }
 }

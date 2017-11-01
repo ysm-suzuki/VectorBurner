@@ -41,22 +41,25 @@ namespace VectorBurnerCalculation
         private List<LineSegment> _boundaryLines = new List<LineSegment>();
 
 
-        public Collision Collision(Vector velocity, Body target)
+        public Collision GetCollision(Vector velocity, Body target)
         {
             float minDistance = float.MaxValue;
-            Collision minDistanceCollision = null;
+            Collision minDistanceCollision = Collision.Non;
 
             foreach (var vertex in vertices)
             {
                 var originalPoint = Point.Create(
                     point.x + vertex.x,
                     point.y + vertex.y);
-                
+
+
                 var collision = GetCollision(originalPoint, velocity, target);
 
-                if (collision == null)
+                if (collision.hasNoCollision)
                     continue;
-                
+                if (target.IsVertex(collision.point))
+                    continue;
+
                 var collisionVelocityLength = (float)System.Math.Sqrt(collision.velocity.GetPower());
                 if (collisionVelocityLength < minDistance)
                 {
@@ -75,7 +78,7 @@ namespace VectorBurnerCalculation
                 velocity.y * velocity.y);
 
             float minDistance = float.MaxValue;
-            Collision minDistanceCollision = null;
+            Collision minDistanceCollision = Collision.Non;
 
             int boundaryLinesCount = target.boundaryLines.Count;
             for (int i = 0; i < boundaryLinesCount; i++)
@@ -88,22 +91,26 @@ namespace VectorBurnerCalculation
                     target.point.x + boundaryLine.to.x,
                     target.point.y + boundaryLine.to.y);
 
+                if (VectorBurnerCalculation.Math.IsOnLine(original, boundaryLine))
+                    continue;
+
                 var collision = GetCollision(
                     original,
                     velocity,
                     lineFrom,
                     lineTo);
 
-                if (collision == null)
+                if (collision.hasNoCollision)
                     continue;
                 
                 var collisionVelocityLength = (float)System.Math.Sqrt(collision.velocity.GetPower());
-                if (collisionVelocityLength < minDistance)
-                {
-                    minDistance = collisionVelocityLength;
-                    minDistanceCollision = collision;
-                }
-                
+                if (collisionVelocityLength >= minDistance)
+                    continue;
+
+                minDistance = collisionVelocityLength;
+                minDistanceCollision = collision;
+                minDistanceCollision.target = target;
+
                 // check if original + velocity is with in inner target boundary.
                 var nextPoint = Point.Create(
                 minDistanceCollision.point.x + minDistanceCollision.velocity.x,
@@ -115,7 +122,8 @@ namespace VectorBurnerCalculation
                     {
                         point = minDistanceCollision.point,
                         velocity = Vector.Create(0, 0),
-                        lineSegment = minDistanceCollision.lineSegment
+                        lineSegment = minDistanceCollision.lineSegment,
+                        target = target
                     };
                 }
             }
@@ -138,24 +146,20 @@ namespace VectorBurnerCalculation
                 LineSegment.Create(boundaryLineFrom, boundaryLineTo));
 
             if (crossPoint.IsInvalidPoint())
-                return null;
+                return Collision.Non;
 
-            var velocityLength = (float)System.Math.Sqrt(targetVelocity.GetPower());
+
             var temporaryVelocity = Vector.Create(targetPoint, crossPoint);
             var temporaryVelocityLength = (float)System.Math.Sqrt(temporaryVelocity.GetPower());
-            if (temporaryVelocityLength == 0)
-                return new Collision
-                {
-                    point = crossPoint,
-                    velocity = Vector.Create(0, 0),
-                    lineSegment = LineSegment.Create(boundaryLineFrom, boundaryLineTo)
-                };
+            
+            var velocityLength = (float)System.Math.Sqrt(targetVelocity.GetPower());
 
             var normalizedTemporaryVelocity = temporaryVelocity.GetUnit();
 
             var collisionVelocityLength = velocityLength > temporaryVelocityLength
                 ? temporaryVelocityLength
                 : velocityLength;
+
 
             return new Collision
             {
@@ -164,12 +168,49 @@ namespace VectorBurnerCalculation
                 lineSegment = LineSegment.Create(boundaryLineFrom, boundaryLineTo)
             };
         }
+
+
+        public bool IsVertex(Point target)
+        {
+            foreach (var vertex in vertices)
+                if (Point.Create(
+                    point.x + vertex.x,
+                    point.y + vertex.y)
+                    .FuzzyEquals(target, 0.001f))
+                    return true;
+
+            return false;
+        }
     }
 
     public class Collision
     {
-        public Point point;
-        public Vector velocity;
-        public LineSegment lineSegment;
+        public Point point = null;
+        public Vector velocity = null;
+        public LineSegment lineSegment = null;
+        public Body target = null;
+
+        public bool hasNoCollision = false;
+
+        public static Collision Non
+        {
+            get
+            {
+                return new Collision
+                {
+                    hasNoCollision = true
+                };
+            }
+        }
+
+        public Vector lineVector
+        {
+            get
+            {
+                return lineSegment != null
+                    ? Vector.Create(lineSegment.from, lineSegment.to)
+                    : Vector.Create(0, 0);
+            }
+        }
     }
 }
