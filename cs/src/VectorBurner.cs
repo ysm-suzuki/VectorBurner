@@ -24,16 +24,17 @@ public class VectorBurner
 
         if (collision.hasNoCollision)
             return target.point + velocity;
-
+        
         var calculatedVelocity = collision.velocity;
         var calculatedVelocityLength = (float)System.Math.Sqrt(calculatedVelocity.GetPower());
 
         var velocityLength = (float)System.Math.Sqrt(velocity.GetPower());
 
         var newPoint = target.point + calculatedVelocity;
-
-        var bounceVector =
-            VectorBurnerCalculation.Math.Rotate(collision.lineVector, System.Math.PI / 2);
+        
+        var bounceVector = collision.target.isCircle
+            ? Vector.Create(collision.target.point, collision.point)
+            : VectorBurnerCalculation.Math.Rotate(collision.lineVector, System.Math.PI / 2);
 
         return newPoint + bounceVector.GetUnit() * bounce;
     }
@@ -118,6 +119,6 @@ public class VectorBurner
 
     public string Version
     {
-        get { return "0.0.12"; }
+        get { return "0.0.13"; }
     }
 }

@@ -86,9 +86,29 @@ namespace VectorBurnerCalculation
 
         private Collision GetCollision(Point original, Vector velocity, Body target)
         {
-            var velocityLength = (float)System.Math.Sqrt(
-                velocity.x * velocity.x +
-                velocity.y * velocity.y);
+            if (target.isCircle)
+            {
+                var orthogonalPoint = VectorBurnerCalculation.Math
+                                        .GetProjectionPoint(target.point, LineSegment.Create(original, original + velocity));
+                var orthogonalPointVector = Vector.Create(target.point, orthogonalPoint);
+
+                if ((float)System.Math.Sqrt(orthogonalPointVector.GetPower()) > target.radius)
+                    return Collision.Non;
+
+
+                var orthogonalPointVector2 = Vector.Create(original, orthogonalPoint);
+                var boundaryPointVectorLength =
+                    System.Math.Sqrt(orthogonalPointVector2.GetPower()) -
+                    System.Math.Sqrt(target.radius * target.radius - orthogonalPointVector.GetPower());
+                var boundaryPoint = original + velocity.GetUnit() * (float)boundaryPointVectorLength;
+
+                return new Collision
+                {
+                    point = boundaryPoint,
+                    velocity = Vector.Create(original, boundaryPoint),
+                    target = target,
+                };
+            }
 
             float minDistance = float.MaxValue;
             Collision minDistanceCollision = Collision.Non;
@@ -126,10 +146,6 @@ namespace VectorBurnerCalculation
                 minDistance = collisionVelocityLength;
                 minDistanceCollision = collision;
                 minDistanceCollision.target = target;
-                minDistanceCollision.projectionPoint = 
-                    VectorBurnerCalculation.Math.GetProjectionPoint(
-                        original + velocity,
-                        minDistanceCollision.lineSegment);
             }
 
             return minDistanceCollision;
@@ -194,7 +210,6 @@ namespace VectorBurnerCalculation
         // has value when collides.
         public LineSegment lineSegment = null;
         public Body target = null;
-        public Point projectionPoint = null;
 
         public bool hasNoCollision = false;
 
