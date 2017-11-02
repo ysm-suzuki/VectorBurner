@@ -215,6 +215,48 @@ namespace UnitTest
                 bounce = 0,
                 expected = Point.Create(3, 0)
             },
+            // ---------------------------------------
+            new TestCase
+            {
+                title = "circle.",
+                target = new Body
+                {
+                    point = Point.Create(0, 0),
+                    radius = 10.0f
+                },
+                velocity = Vector.Create(5.0f, 0),
+                barricades = new List<Body>
+                {
+                    new Body
+                    {
+                        point = Point.Create(23, 0),
+                        radius = 10.0f
+                    }
+                },
+                bounce = 1,
+                expected = Point.Create(2, 0)
+            },
+            // ---------------------------------------
+            new TestCase
+            {
+                title = "circle.",
+                target = new Body
+                {
+                    point = Point.Create(0, 10.0f),
+                    radius = 10.0f
+                },
+                velocity = Vector.Create(20.0f, 0),
+                barricades = new List<Body>
+                {
+                    new Body
+                    {
+                        point = Point.Create(20, 0),
+                        radius = 10.0f
+                    }
+                },
+                bounce = 0,
+                expected = Point.Create(10, 10)
+            },
         };
     }
 }
