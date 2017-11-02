@@ -88,19 +88,36 @@ namespace VectorBurnerCalculation
         {
             if (target.isCircle)
             {
-                var orthogonalPoint = VectorBurnerCalculation.Math
-                                        .GetProjectionPoint(target.point, LineSegment.Create(original, original + velocity));
-                var orthogonalPointVector = Vector.Create(target.point, orthogonalPoint);
+                var line = LineSegment.Create(original, original + velocity);
+                Point boundaryPoint;
 
-                if ((float)System.Math.Sqrt(orthogonalPointVector.GetPower()) > target.radius)
-                    return Collision.Non;
+                if (VectorBurnerCalculation.Math.IsOnLine(target.point, line))
+                {
+                    boundaryPoint = target.point + velocity.GetUnit() * (float)(-1.0f * radius);
+                    return new Collision
+                    {
+                        point = boundaryPoint,
+                        velocity = Vector.Create(original, boundaryPoint),
+                        target = target,
+                    };
+                }
+                else
+                {
+                    var orthogonalPoint = VectorBurnerCalculation.Math
+                                            .GetProjectionPoint(target.point, line);
+                    var orthogonalPointVector = Vector.Create(target.point, orthogonalPoint);
+
+                    if ((float)System.Math.Sqrt(orthogonalPointVector.GetPower()) > target.radius)
+                        return Collision.Non;
 
 
-                var orthogonalPointVector2 = Vector.Create(original, orthogonalPoint);
-                var boundaryPointVectorLength =
-                    System.Math.Sqrt(orthogonalPointVector2.GetPower()) -
-                    System.Math.Sqrt(target.radius * target.radius - orthogonalPointVector.GetPower());
-                var boundaryPoint = original + velocity.GetUnit() * (float)boundaryPointVectorLength;
+                    var orthogonalPointVector2 = Vector.Create(original, orthogonalPoint);
+                    var boundaryPointVectorLength =
+                        System.Math.Sqrt(orthogonalPointVector2.GetPower()) -
+                        System.Math.Sqrt(target.radius * target.radius - orthogonalPointVector.GetPower());
+
+                    boundaryPoint = original + velocity.GetUnit() * (float)boundaryPointVectorLength;
+                }
 
                 return new Collision
                 {
@@ -126,7 +143,7 @@ namespace VectorBurnerCalculation
 
                 var nextPoint = original + velocity;
 
-                if (VectorBurnerCalculation.Math.IsOnLine(original, boundaryLine)
+                if (VectorBurnerCalculation.Math.IsOnLineSegment(original, boundaryLine)
                     && !VectorBurnerCalculation.Math.IsWithIn(nextPoint, target.boundaryLines))
                     continue;
                 

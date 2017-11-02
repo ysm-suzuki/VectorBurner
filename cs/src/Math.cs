@@ -96,9 +96,20 @@ namespace VectorBurnerCalculation
             var vector1 = Vector.Create(point, line.from);
             var vector2 = Vector.Create(point, line.to);
 
+            if (vector1.GetUnit().x == vector2.GetUnit().x
+                && vector1.GetUnit().y == vector2.GetUnit().y)
+                return true;
+
+            return IsOnLineSegment(point, line);
+        }
+        public static bool IsOnLineSegment(Point point, LineSegment line)
+        {
+            var vector1 = Vector.Create(point, line.from);
+            var vector2 = Vector.Create(point, line.to);
+
             if (Cross(vector1.GetUnit(), vector2.GetUnit()) != 0)
                 return false;
-            
+
             var linVector = Vector.Create(line.from, line.to);
 
             return 

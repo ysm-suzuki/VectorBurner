@@ -25,11 +25,13 @@ namespace UnitTest
                 var target = testCase.target;
                 var velocity = testCase.velocity;
                 var barricades = testCase.barricades;
+                var bounce = testCase.bounce;
                 var expected = testCase.expected;
                 
                 var result = vectorBurner
                     .SetTarget(target)
                     .SetBarricades(barricades)
+                    .SetBounce(bounce)
                     .GetDestination(velocity);
 
                 if (expected.FuzzyEquals(result, 0.01f))
@@ -54,6 +56,7 @@ namespace UnitTest
             public Body target;
             public Vector velocity;
             public List<Body> barricades;
+            public float bounce;
 
             public Point expected;
         }
@@ -89,6 +92,7 @@ namespace UnitTest
                         }
                     }
                 },
+                bounce = 0,
                 expected = Point.Create(3, 8)
             },
             // ---------------------------------------
@@ -121,6 +125,7 @@ namespace UnitTest
                         }
                     }
                 },
+                bounce = 0,
                 expected = Point.Create(0.165677f, 0)
             },
             // ---------------------------------------
@@ -153,6 +158,7 @@ namespace UnitTest
                         }
                     }
                 },
+                bounce = 0,
                 expected = Point.Create(40, 0)
             },
             // ---------------------------------------
@@ -185,7 +191,29 @@ namespace UnitTest
                         }
                     }
                 },
+                bounce = 0,
                 expected = Point.Create(44, 0)
+            },
+            // ---------------------------------------
+            new TestCase
+            {
+                title = "circle.",
+                target = new Body
+                {
+                    point = Point.Create(0, 0),
+                    radius = 10.0f
+                },
+                velocity = Vector.Create(5.0f, 0),
+                barricades = new List<Body>
+                {
+                    new Body
+                    {
+                        point = Point.Create(23, 0),
+                        radius = 10.0f
+                    }
+                },
+                bounce = 0,
+                expected = Point.Create(3, 0)
             },
         };
     }
