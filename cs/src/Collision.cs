@@ -134,10 +134,15 @@ namespace VectorBurnerCalculation
             if (VectorBurnerCalculation.Math.IsOnLine(target.point, line))
             {
                 boundaryPoint = target.point + velocity.GetUnit() * (float)(-1.0f * radius);
+                var temporaryVelocity = Vector.Create(original, boundaryPoint);
+
+                if (temporaryVelocity.GetLength() > velocity.GetLength())
+                    return Collision.Non;
+
                 return new Collision
                 {
                     point = boundaryPoint,
-                    velocity = Vector.Create(original, boundaryPoint),
+                    velocity = temporaryVelocity,
                     target = target,
                 };
             }

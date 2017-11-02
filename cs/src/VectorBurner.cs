@@ -113,6 +113,6 @@ public class VectorBurner
 
     public string Version
     {
-        get { return "0.0.14"; }
+        get { return "0.0.15"; }
     }
 }
