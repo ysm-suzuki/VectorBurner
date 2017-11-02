@@ -25,16 +25,10 @@ public class VectorBurner
         if (collision.hasNoCollision)
             return target.point + velocity;
         
-        var calculatedVelocity = collision.velocity;
-        var calculatedVelocityLength = (float)System.Math.Sqrt(calculatedVelocity.GetPower());
-
-        var velocityLength = (float)System.Math.Sqrt(velocity.GetPower());
-
-        var newPoint = target.point + calculatedVelocity;
-        
+        var newPoint = target.point + collision.velocity;
         var bounceVector = collision.target.isCircle
             ? Vector.Create(collision.target.point, collision.point)
-            : VectorBurnerCalculation.Math.Rotate(collision.lineVector, System.Math.PI / 2);
+            : collision.lineVector.Rotate((float)System.Math.PI / 2);
 
         return newPoint + bounceVector.GetUnit() * bounce;
     }
@@ -104,7 +98,7 @@ public class VectorBurner
                 || barricade.IsVertex(collision.point))
                 continue;
             
-            var temporaryVelocityLength = (float)System.Math.Sqrt(collision.velocity.GetPower());
+            var temporaryVelocityLength = collision.velocity.GetLength();
             if (temporaryVelocityLength < minDistance)
             {
                 minDistance = temporaryVelocityLength;
@@ -119,6 +113,6 @@ public class VectorBurner
 
     public string Version
     {
-        get { return "0.0.13"; }
+        get { return "0.0.14"; }
     }
 }

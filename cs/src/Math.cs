@@ -65,16 +65,6 @@ namespace VectorBurnerCalculation
             // has no intersection (out of line segment.)
             return Point.CreateInvalidPoint();
         }
-        
-        public static Vector Rotate(Vector vector, double radian)
-        {
-            var sin = System.Math.Sin(radian);
-            var cos = System.Math.Cos(radian);
-
-            return Vector.Create(
-                            (float)(vector.x * cos - vector.y * sin),
-                            (float)(vector.x * sin + vector.y * cos));
-        }
 
         // shape: A convex polygon with clockwise rotation only.
         public static bool IsWithIn(Point point, List<LineSegment> shape)
@@ -91,17 +81,18 @@ namespace VectorBurnerCalculation
             return Cross(Vector.Create(point, line.from), Vector.Create(point, line.to)) > 0;
         }
 
+        // a point is on the line or not.
         public static bool IsOnLine(Point point, LineSegment line)
         {
             var vector1 = Vector.Create(point, line.from);
             var vector2 = Vector.Create(point, line.to);
 
-            if (vector1.GetUnit().x == vector2.GetUnit().x
-                && vector1.GetUnit().y == vector2.GetUnit().y)
+            if (vector1.GetUnit().Equals(vector2.GetUnit()))
                 return true;
 
             return IsOnLineSegment(point, line);
         }
+        // a point is on the line segment or not.
         public static bool IsOnLineSegment(Point point, LineSegment line)
         {
             var vector1 = Vector.Create(point, line.from);
@@ -110,12 +101,8 @@ namespace VectorBurnerCalculation
             if (Cross(vector1.GetUnit(), vector2.GetUnit()) != 0)
                 return false;
 
-            var linVector = Vector.Create(line.from, line.to);
-
-            return 
-                System.Math.Sqrt(vector1.GetPower()) + System.Math.Sqrt(vector2.GetPower()) 
-                <=
-                System.Math.Sqrt(linVector.GetPower());
+            return
+                vector1.GetLength() + vector2.GetLength() <= line.ToVector().GetLength();
         }
 
         public static Point GetProjectionPoint(Point point, LineSegment line)
@@ -127,9 +114,9 @@ namespace VectorBurnerCalculation
             var vector2 = Vector.Create(point, line.to);
             var lineVector = Vector.Create(line.from, line.to);
             var crossedLineVector = Vector
-                                        .Create(line.from, line.to);
-            Rotate(crossedLineVector, (float)System.Math.PI / 2);
-            crossedLineVector -= vector1;
+                                        .Create(line.from, line.to)
+                                        .Rotate((float)System.Math.PI / 2)
+                                        - vector1;
 
             var cross1 = Cross(crossedLineVector, vector1);
             var cross2 = Cross(crossedLineVector, vector2);
@@ -138,9 +125,7 @@ namespace VectorBurnerCalculation
             if (cross1 == 0 && cross2 == 0)
                 Point.CreateInvalidPoint();
 
-            double ratio = System.Math.Sqrt(vector1.GetPower()) 
-                / 
-                (System.Math.Sqrt(vector1.GetPower()) + System.Math.Sqrt(vector2.GetPower()));
+            double ratio = vector1.GetLength() / (vector1.GetLength() + vector2.GetLength());
 
             var projectionPoin = line.from + lineVector * (float)ratio;
 
