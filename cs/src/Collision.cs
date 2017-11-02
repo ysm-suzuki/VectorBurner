@@ -50,9 +50,17 @@ namespace VectorBurnerCalculation
 
         public Collision GetCollision(Vector velocity, Body target)
         {
-            if (isCircle)
+            System.Diagnostics.Debug.Assert(
+                !(target.isCircle && !isCircle),
+                "It is not available in case that the object is not circle and the subject is circle");
+            if (target.isCircle)
                 return GetCollision(
                             point + velocity.GetUnit() * radius,
+                            velocity,
+                            target);
+            if (isCircle)
+                return GetCollision(
+                            point,
                             velocity,
                             target);
                     
@@ -61,11 +69,7 @@ namespace VectorBurnerCalculation
             
             foreach (var vertex in vertices)
             {
-                var originalPoint = Point.Create(
-                    point.x + vertex.x,
-                    point.y + vertex.y);
-
-
+                var originalPoint = point + vertex.ToVector();
                 var collision = GetCollision(originalPoint, velocity, target);
 
                 if (collision.hasNoCollision)
@@ -104,12 +108,21 @@ namespace VectorBurnerCalculation
                 if (VectorBurnerCalculation.Math.IsOnLineSegment(original, boundaryLine)
                     && !VectorBurnerCalculation.Math.IsWithIn(nextPoint, target.boundaryLines))
                     continue;
-                
-                var collision = GetCollision(
-                    original,
-                    velocity,
-                    lineFrom,
-                    lineTo);
+
+                Collision collision;
+                if (isCircle)
+                    collision = GetCollision(
+                        original,
+                        velocity,
+                        lineFrom,
+                        lineTo,
+                        radius);
+                else
+                    collision = GetCollision(
+                        original,
+                        velocity,
+                        lineFrom,
+                        lineTo);
 
                 if (collision.hasNoCollision)
                     continue;
@@ -204,6 +217,30 @@ namespace VectorBurnerCalculation
                 velocity = normalizedTemporaryVelocity * collisionVelocityLength,
                 lineSegment = LineSegment.Create(boundaryLineFrom, boundaryLineTo),
             };
+        }
+
+        private Collision GetCollision(
+            Point targetPoint,
+            Vector targetVelocity,
+            Point boundaryLineFrom,
+            Point boundaryLineTo,
+            float radius)
+        {
+            var line = LineSegment.Create(boundaryLineFrom, boundaryLineTo);
+            var temporaryProjectionPoint = VectorBurnerCalculation.Math
+                                    .GetProjectionPoint(targetPoint, line);
+
+            var toProjectionPointVector = 
+                Vector
+                    .Create(targetPoint, temporaryProjectionPoint)
+                    .GetUnit()
+                    * radius;
+
+            return GetCollision(
+                targetPoint + toProjectionPointVector,
+                targetVelocity,
+                boundaryLineFrom,
+                boundaryLineTo);
         }
 
 
